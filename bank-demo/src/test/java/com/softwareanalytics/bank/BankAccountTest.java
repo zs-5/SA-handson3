@@ -9,7 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test suite for BankAccount (~70% coverage).
- * Intentionally leaves some paths uncovered for Software Analytics course exercise.
+ * Intentionally leaves some paths uncovered for Software Analytics course
+ * exercise.
  */
 @DisplayName("BankAccount Tests")
 class BankAccountTest {
@@ -84,8 +85,7 @@ class BankAccountTest {
         void withdrawInsufficientFunds() {
             IllegalArgumentException ex = assertThrows(
                     IllegalArgumentException.class,
-                    () -> account.withdraw(150.0)
-            );
+                    () -> account.withdraw(150.0));
             assertEquals("insufficient funds", ex.getMessage());
         }
 
@@ -94,9 +94,66 @@ class BankAccountTest {
         void withdrawNegativeAmount() {
             IllegalArgumentException ex = assertThrows(
                     IllegalArgumentException.class,
-                    () -> account.withdraw(-10.0)
-            );
+                    () -> account.withdraw(-10.0));
             assertEquals("amount must be positive", ex.getMessage());
+        }
+    }
+
+    @Nested
+    @DisplayName("freeze")
+    class FreezeTests {
+
+        @Test
+        @DisplayName("freeze and check")
+        void freezeTest() {
+            account.freeze();
+
+            assertTrue(account.isFrozen());
+        }
+    }
+
+    @Nested
+    @DisplayName("unfreeze")
+    class UnfreezeTests {
+
+        @Test
+        @DisplayName("unfreeze and check")
+        void unfreezeTest() {
+            account.unfreeze();
+
+            assertFalse(account.isFrozen());
+        }
+    }
+
+    @Nested
+    @DisplayName("transfer")
+    class TransferTests {
+
+        @Test
+        @DisplayName("null target: throws IllegalArgumentException")
+        void transferNullTarget() {
+            IllegalArgumentException ex = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> account.transfer(null, 1));
+            assertEquals("target cannot be null", ex.getMessage());
+        }
+
+        @Test
+        @DisplayName("self target: throws IllegalArgumentException")
+        void transferSelfTarget() {
+            IllegalArgumentException ex = assertThrows(
+                    IllegalArgumentException.class,
+                    () -> account.transfer(account, 1));
+            assertEquals("cannot transfer to self", ex.getMessage());
+        }
+
+        @Test
+        @DisplayName("happy path: transfer works")
+        void transferHappyPath() {
+            BankAccount acc2 = new BankAccount("Bob", 0);
+            account.transfer(acc2, 10);
+
+            assertEquals(10, acc2.getBalance());
         }
     }
 }
